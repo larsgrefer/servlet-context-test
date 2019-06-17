@@ -4,11 +4,45 @@
 package de.larsgrefer.test;
 
 import org.junit.Test;
-import static org.junit.Assert.*;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.test.context.junit4.SpringRunner;
 
+import java.io.File;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
+@RunWith(SpringRunner.class)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class AppTest {
-    @Test public void testAppHasAGreeting() {
-        App classUnderTest = new App();
-        assertNotNull("app should have a greeting", classUnderTest.getGreeting());
+
+    @Autowired
+    private TestRestTemplate restTemplate;
+
+    @Test
+    public void testResources() {
+        String resources = restTemplate.getForObject("/resources", String.class);
+
+        List<String> collect = Arrays.stream(resources.split("\n"))
+                .map(String::trim)
+                .filter(s -> !s.isEmpty())
+                .collect(Collectors.toList());
+
+        assertThat(collect).contains(
+                "/classpath-resource.txt",
+                "/library-classpath-resource.txt",
+                "/test-classpath-resource.txt"
+        );
+
+        if (new File(".").getAbsolutePath().contains("-war")) {
+            assertThat(collect).contains(
+                    "/war-resource.txt"
+            );
+        }
     }
 }
