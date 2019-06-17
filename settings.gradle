@@ -1,0 +1,9 @@
+rootProject.name = 'servlet-context-test'
+
+include "library"
+include "tomcat-jar"
+include "tomcat-war"
+include "jetty-jar"
+include "jetty-war"
+include "undertow-jar"
+include "undertow-war"
