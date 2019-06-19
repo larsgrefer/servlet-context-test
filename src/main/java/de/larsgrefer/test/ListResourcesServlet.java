@@ -22,11 +22,20 @@ public class ListResourcesServlet extends HttpServlet {
         ServletContext servletContext = req.getServletContext();
 
         Set<String> resourcePaths = servletContext.getResourcePaths("/");
-        if (resourcePaths != null) {
-            resourcePaths.forEach(printWriter::println);
-        }
+        printPaths(printWriter, servletContext, resourcePaths);
 
         printWriter.flush();
         resp.flushBuffer();
+    }
+
+    private void printPaths(PrintWriter printWriter, ServletContext servletContext, Set<String> resourcePaths) {
+        if (resourcePaths != null) {
+            for (String resourcePath : resourcePaths) {
+                printWriter.println(resourcePath);
+                if (resourcePath.endsWith("/")) {
+                    printPaths(printWriter, servletContext, servletContext.getResourcePaths(resourcePath));
+                }
+            }
+        }
     }
 }
