@@ -3,21 +3,21 @@
  */
 package de.larsgrefer.test;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.test.context.junit4.SpringRunner;
 
+import javax.servlet.ServletContext;
 import java.io.File;
+import java.net.MalformedURLException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class AppTest {
 
@@ -44,5 +44,16 @@ public class AppTest {
                     "/war-resource.txt"
             );
         }
+    }
+
+    @Autowired
+    private ServletContext servletContext;
+
+    @Test
+    public void testDirectAccess() throws MalformedURLException {
+        assertThat(servletContext.getResource("/classpath-resource.txt")).isNotNull();
+        assertThat(servletContext.getResource("/library-classpath-resource.txt")).isNotNull();
+        assertThat(servletContext.getResource("/test-classpath-resource.txt")).isNotNull();
+        assertThat(servletContext.getResource("/war-resource.txt")).isNotNull();
     }
 }
